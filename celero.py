@@ -96,3 +96,53 @@ def processar_texto(review):
     stem.append(stemmer.stem(token))
 
   return stem
+
+## etapa 3 - vetorização
+
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+df["tokens"] = df["review_text"].apply(processar_texto)
+df["review_sentiment"] = df["sentiment"].apply(lambda i: 1
+                                              if i == "positive" else 0)
+
+X = df["tokens"].tolist()
+y = df["review_sentiment"].tolist()
+
+# Positive/Negative Frequency
+
+def build_freqs(review_list, sentiment_list):
+  freqs = {}
+  for review, sentiment in zip(review_list, sentiment_list):
+    for word in review:
+      pair = (word, sentiment)
+      if pair in freqs:
+        freqs[pair] += 1
+      else:
+        freqs[pair] = 1
+  return freqs
+
+def review_to_freq(review, freqs):
+  x = np.zeros((2,))
+  for word in review:
+    if (word, 1) in freqs:
+      x[0] += freqs[(word, 1)]
+    if (word, 0) in freqs:
+      x[1] += freqs[(word, 0)]
+  return x
+
+# Bag of words
+
+def fit_cv(review_corpus):
+  cv_vect = CountVectorizer(tokenizer=lambda x: x,
+                            preprocessor=lambda x: x)
+  cv_vect.fit(review_corpus)
+  return cv_vect
+
+# Inverse Document Frequency (TF-IDF)
+
+def fit_tfidf(review_corpus):
+  tf_vect = TfidfVectorizer(preprocessor=lambda x: x,
+                            tokenizer=lambda x: x)
+  tf_vect.fit(review_corpus)
+  return tf_vect
