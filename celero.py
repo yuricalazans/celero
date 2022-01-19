@@ -217,3 +217,30 @@ plotar_matriz(confusion_matrix(y_test, modelo2.predict(X_test_cv)))
 
 print("Precisão do modelo 3: {:.2%}".format(accuracy_score(y_test, modelo3.predict(X_test_tf))))
 plotar_matriz(confusion_matrix(y_test, modelo3.predict(X_test_tf)))
+
+## módulo para execução
+
+from flask import Flask, request
+#from flask_ngrok import run_with_ngrok
+#!pip install flask-ngrok
+#!pip install flask-bootstrap
+#!tar -xzvf '/content/gdrive/MyDrive/Celero/ngrok-stable-linux-amd64.tgz'
+#!./ngrok authtoken 23mPjro3E8PEeLE1X004hF6pLsO_5CcL7DZobefPXMuXdZwbY
+
+app = Flask(__name__)
+
+@app.route('/',methods = ['POST'])
+def index():
+
+  review = request.get_data().decode("utf-8")
+  tf = fit_tfidf(X_train)
+  transformed_review = tf.transform([processar_texto(review)])
+  pred = modelo3.predict(transformed_review)
+
+  if pred == 1:
+    return "+1"
+  else:
+    return "-1"
+
+app.run(host='0.0.0.0', port=81)
+#app.run() # Google Collab / ngrok
