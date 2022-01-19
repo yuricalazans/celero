@@ -184,3 +184,36 @@ X_test_tf = tf.transform(X_test)
 modelo3 = LogisticRegression()
 modelo3.fit(X_train_tf, y_train)
 joblib.dump(modelo3, path_modelo+'modelo_celero.pkl')
+
+## Métricas
+
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score
+
+import matplotlib.pyplot as plt
+import seaborn as sn
+
+def plotar_matriz(cm):
+  plt.figure(figsize = (5,5))
+  sn.heatmap(cm, annot=True, cmap="Greens", fmt='.0f')
+  plt.xlabel("Predito")
+  plt.ylabel("Verdadeiro")
+  plt.title("Matriz de Confusão")
+  plt.show() # no Google Collab vai só o "return n"
+  return sn
+
+# modelo 1
+
+print("Precisão do modelo 1: {:.2%}".format(accuracy_score(y_test, modelo1.predict(X_test_pn))))
+plotar_matriz(confusion_matrix(y_test, modelo1.predict(X_test_pn)))
+
+# modelo 2
+
+print("Precisão do modelo 2: {:.2%}".format(accuracy_score(y_test, modelo2.predict(X_test_cv))))
+plotar_matriz(confusion_matrix(y_test, modelo2.predict(X_test_cv)))
+
+# modelo 3
+
+print("Precisão do modelo 3: {:.2%}".format(accuracy_score(y_test, modelo3.predict(X_test_tf))))
+plotar_matriz(confusion_matrix(y_test, modelo3.predict(X_test_tf)))
