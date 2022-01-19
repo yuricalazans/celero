@@ -18,7 +18,7 @@ emoji - pip3 install emoji
 
 re - pip3 install re
 
-# Modo de uso - Configuração 1 (treinamento dos modelos e execução via API)
+# Modo de uso - Configuração 1 (treinamento e execução via API)
 
 python3 celero.py -pt "/.../aclImdb/train/" -pm "/.../celero"
 
