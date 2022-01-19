@@ -146,3 +146,41 @@ def fit_tfidf(review_corpus):
                             tokenizer=lambda x: x)
   tf_vect.fit(review_corpus)
   return tf_vect
+
+## modelos
+
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    random_state=0,
+                                                    train_size=0.80)
+
+# modelo 1 (pos/neg frequency)
+
+freqs = build_freqs(X_train, y_train)
+X_train_pn = [review_to_freq(review, freqs) for review in X_train]
+X_test_pn = [review_to_freq(review, freqs) for review in X_test]
+
+modelo1 = LogisticRegression()
+modelo1.fit(X_train_pn, y_train)
+
+# modelo 2 (bag of words)
+
+cv = fit_cv(X_train)
+X_train_cv = cv.transform(X_train)
+X_test_cv = cv.transform(X_test)
+
+modelo2 = LogisticRegression(solver='lbfgs', max_iter=1000) # solução para rodar o bag of words (https://stackoverflow.com/questions/62658215/convergencewarning-lbfgs-failed-to-converge-status-1-stop-total-no-of-iter)
+modelo2.fit(X_train_cv, y_train)
+
+# modelo 3 (TF-IDF) + dump com joblib
+
+tf = fit_tfidf(X_train)
+X_train_tf = tf.transform(X_train)
+X_test_tf = tf.transform(X_test)
+
+modelo3 = LogisticRegression()
+modelo3.fit(X_train_tf, y_train)
+joblib.dump(modelo3, path_modelo+'modelo_celero.pkl')
